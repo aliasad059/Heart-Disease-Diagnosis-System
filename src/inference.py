@@ -1,23 +1,9 @@
-inputs_membership = {
-    'chest_pain': 1,
-    'sex': 1,
-    'exercise': True,
-    'thallium_scan': 3,
-    'blood_sugar': 1,
-    'age': [],
-    'blood_pressure': [],
-    'cholesterol': [],
-    'heart_rate': [],
-    'ecg': [],
-    'old_peak': [],
-}
-
 output_membership = {
-    'healthy': 0,
-    'sick_1': 0,
-    'sick_2': 0,
-    'sick_3': 0,
-    'sick_4': 0
+    'healthy': 0.,
+    'sick_1': 0.,
+    'sick_2': 0.,
+    'sick_3': 0.,
+    'sick_4': 0.
 }
 
 
@@ -28,7 +14,7 @@ def infer_healthy_membership(inputs_membership):
         Healthy rules are:
             RULE 11: IF (chest_pain IS typical_anginal) THEN health IS healthy;
             RULE 18: IF (blood_pressure IS low) THEN health IS healthy;
-            RULE 23: IF (cholestrol IS low) THEN health IS healthy;
+            RULE 23: IF (cholesterol IS low) THEN health IS healthy;
             RULE 29: IF (ecg IS normal) THEN health IS healthy;
             RULE 34: IF (heart_rate IS low) THEN health IS healthy;
             RULE 40: IF (old_peak IS low) THEN health IS healthy;
@@ -46,7 +32,7 @@ def infer_healthy_membership(inputs_membership):
     return output_membership['healthy']
 
 
-def infer_sick_1_membership():
+def infer_sick_1_membership(inputs_membership):
     """
         checks rules for sick_1.
 
@@ -56,7 +42,7 @@ def infer_sick_1_membership():
             RULE 12: IF (chest_pain IS atypical_anginal) THEN health IS sick_1;
             RULE 16: IF (sex IS female) THEN health IS sick_1;
             RULE 19: IF (blood_pressure IS medium) THEN health IS sick_1;
-            RULE 24: IF (cholestrol IS medium) THEN health IS sick_1;
+            RULE 24: IF (cholesterol IS medium) THEN health IS sick_1;
             RULE 30: IF (ecg IS normal) THEN health IS sick_1;
             RULE 35: IF (heart_rate IS medium) THEN health IS sick_1;
             RULE 41: IF (old_peak IS low) THEN health IS sick_1;
@@ -75,11 +61,11 @@ def infer_sick_1_membership():
     output_membership['sick_1'] = max(output_membership['sick_1'], inputs_membership['heart_rate'][1])
     output_membership['sick_1'] = max(output_membership['sick_1'], inputs_membership['old_peak'][0])
     output_membership['sick_1'] = max(output_membership['sick_1'], inputs_membership['thallium_scan'] == 3)
-    output_membership['sick_1'] = max(output_membership['sick_1'], inputs_membership['age'][2])
+    output_membership['sick_1'] = max(output_membership['sick_1'], inputs_membership['age'][1])
     return output_membership['sick_1']
 
 
-def infer_sick_2_membership():
+def infer_sick_2_membership(inputs_membership):
     """
         checks rules for sick_2.
 
@@ -90,7 +76,7 @@ def infer_sick_2_membership():
             RULE 13: IF (chest_pain IS non_aginal_pain) THEN health IS sick_2;
             RULE 17: IF (sex IS male) THEN health IS sick_2;
             RULE 20: IF (blood_pressure IS high) THEN health IS sick_2;
-            RULE 25: IF (cholestrol IS high) THEN health IS sick_2;
+            RULE 25: IF (cholesterol IS high) THEN health IS sick_2;
             RULE 28: IF (blood_sugar IS true) THEN health IS sick_2;
             RULE 31: IF (ecg IS abnormal) THEN health IS sick_2;
             RULE 36: IF (heart_rate IS medium) THEN health IS sick_2;
@@ -103,12 +89,15 @@ def infer_sick_2_membership():
                                       min(inputs_membership['sex'] == 2, inputs_membership['heart_rate'][1]))
     output_membership['sick_2'] = max(output_membership['sick_2'],
                                       min(inputs_membership['chest_pain'] == 1, inputs_membership['heart_rate'][1]))
-    # output_membership['sick_2'] = max(output_membership['sick_2'], min(inputs_membership['blood_sugar'], inputs_membership['blood_pressure'][2]))
+    if inputs_membership['blood_sugar'] < 1:
+        output_membership['sick_2'] = max(output_membership['sick_2'],
+                                          min(inputs_membership['blood_sugar'], inputs_membership['blood_pressure'][3]))
     output_membership['sick_2'] = max(output_membership['sick_2'], inputs_membership['chest_pain'] == 3)
     output_membership['sick_2'] = max(output_membership['sick_2'], inputs_membership['sex'] == 1)
     output_membership['sick_2'] = max(output_membership['sick_2'], inputs_membership['blood_pressure'][2])
     output_membership['sick_2'] = max(output_membership['sick_2'], inputs_membership['cholesterol'][2])
-    # output_membership['sick_2'] = max(output_membership['sick_2'], inputs_membership['blood_sugar'])
+    if inputs_membership['blood_sugar'] == 1:
+        output_membership['sick_2'] = max(output_membership['sick_2'], inputs_membership['blood_sugar'])
     output_membership['sick_2'] = max(output_membership['sick_2'], inputs_membership['ecg'][1])
     output_membership['sick_2'] = max(output_membership['sick_2'], inputs_membership['heart_rate'][1])
     output_membership['sick_2'] = max(output_membership['sick_2'], inputs_membership['exercise'])
@@ -119,7 +108,7 @@ def infer_sick_2_membership():
     return output_membership['sick_2']
 
 
-def infer_sick_3_membership():
+def infer_sick_3_membership(inputs_membership):
     """
         checks rules for sick_3.
 
@@ -129,9 +118,9 @@ def infer_sick_3_membership():
             RULE 7: IF (blood_sugar IS true) AND (age IS mild) THEN health IS sick_3;
             RULE 14: IF (chest_pain IS asymptomatic) THEN health IS sick_3;
             RULE 21: IF (blood_pressure IS high) THEN health IS sick_3;
-            RULE 26: IF (cholestrol IS high) THEN health IS sick_3;
+            RULE 26: IF (cholesterol IS high) THEN health IS sick_3;
             RULE 32: IF (ecg IS hypertrophy) THEN health IS sick_3;
-            RULE 37: IF(heart_rate IS high) THEN health IS sick_3;
+            RULE 37: IF (heart_rate IS high) THEN health IS sick_3;
             RULE 43: IF (old_peak IS terrible) THEN health IS sick_3;
             RULE 48: IF (thallium_scan IS high) THEN health IS sick_3;
             RULE 53: IF (age IS old) THEN health IS sick_3;
@@ -140,7 +129,8 @@ def infer_sick_3_membership():
                                       min(inputs_membership['sex'] == 1, inputs_membership['heart_rate'][1]))
     output_membership['sick_3'] = max(output_membership['sick_3'],
                                       min(inputs_membership['chest_pain'] == 3, inputs_membership['blood_pressure'][2]))
-    # output_membership['sick_3'] = max(output_membership['sick_3'], )
+    if inputs_membership['blood_sugar'] == 1:
+        output_membership['sick_3'] = max(output_membership['sick_3'], inputs_membership['age'][1])
     output_membership['sick_3'] = max(output_membership['sick_3'], inputs_membership['chest_pain'] == 4)
     output_membership['sick_3'] = max(output_membership['sick_3'], inputs_membership['blood_pressure'][2])
     output_membership['sick_3'] = max(output_membership['sick_3'], inputs_membership['cholesterol'][2])
@@ -153,7 +143,7 @@ def infer_sick_3_membership():
     return output_membership['sick_3']
 
 
-def infer_sick_4_membership():
+def infer_sick_4_membership(inputs_membership):
     """
         checks rules for sick_4.
 
@@ -162,9 +152,9 @@ def infer_sick_4_membership():
             RULE 2: IF (heart_rate IS high) AND (age IS old) THEN health IS sick_4;
             RULE 15: IF (chest_pain IS asymptomatic) THEN health IS sick_4;
             RULE 22: IF (blood_pressure IS very_high) THEN health IS sick_4;
-            RULE 27: IF (cholestrol IS very_high) THEN health IS sick_4;
+            RULE 27: IF (cholesterol IS very_high) THEN health IS sick_4;
             RULE 33: IF (ecg IS hypertrophy) THEN health IS sick_4;
-            RULE 38: IF(heart_rate IS high) THEN health IS sick_4;
+            RULE 38: IF (heart_rate IS high) THEN health IS sick_4;
             RULE 44: IF (old_peak IS risk) THEN health IS sick_4;
             RULE 49: IF (thallium_scan IS high) THEN health IS sick_4;
             RULE 54: IF (age IS very_old) THEN health IS sick_4;
