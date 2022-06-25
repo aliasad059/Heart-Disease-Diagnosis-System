@@ -173,3 +173,19 @@ def infer_sick_4_membership(inputs_membership):
     output_membership['sick_4'] = max(output_membership['sick_4'], inputs_membership['age'][3])
 
     return output_membership['sick_4']
+
+
+def infer_memberships(fuzzified_inputs):
+    """
+        infer the membership of each variable.
+
+        Args:
+            fuzzified_inputs: a dictionary of fuzzified inputs.
+    """
+    infer_healthy_membership(fuzzified_inputs)
+    infer_sick_1_membership(fuzzified_inputs)
+    infer_sick_2_membership(fuzzified_inputs)
+    infer_sick_3_membership(fuzzified_inputs)
+    infer_sick_4_membership(fuzzified_inputs)
+
+    return output_membership
