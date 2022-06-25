@@ -57,9 +57,7 @@ blood_sugar_miu = get_membership_function((0, 0), (105, 0), (120, 1))
 
 
 def blood_sugar_fuzzification(blood_sugar):
-    return [
-        blood_sugar_miu(blood_sugar)
-    ]
+    return blood_sugar_miu(blood_sugar)
 
 
 cholesterol_low_miu = get_membership_function((0, 1), (151, 1), (197, 0))
@@ -105,7 +103,7 @@ def ECG_fuzzification(ECG):
 
 old_peak_low_miu = get_membership_function((0, 1), (1, 1), (2, 0))
 old_peak_risk_miu = get_membership_function((1.5, 0), (2.8, 1), (4.2, 0))
-old_peak_terrible_miu = get_membership_function((0, 0), (2.5, 0), (4.2, 0))
+old_peak_terrible_miu = get_membership_function((0, 0), (2.5, 0), (4, 1))
 
 
 def old_peak_fuzzification(old_peak):
@@ -131,3 +129,19 @@ def output_fuzzification(output):
         output_s3_miu(output),
         output_s4_miu(output)
     ]
+
+
+def fuzzify(input_data):
+    fuzzified_data = dict()
+    fuzzified_data['chest_pain'] = int(input_data['chest_pain'])
+    fuzzified_data['sex'] = int(input_data['sex'])
+    fuzzified_data['exercise'] = (int(input_data['exercise']) == 1)
+    fuzzified_data['thallium_scan'] = int(input_data['thallium_scan'])
+    fuzzified_data['blood_sugar'] = blood_sugar_fuzzification(int(input_data['blood_sugar']))
+    fuzzified_data['age'] = age_fuzzification(int(input_data['age']))
+    fuzzified_data['blood_pressure'] = blood_pressure_fuzzification(int(input_data['blood_pressure']))
+    fuzzified_data['cholesterol'] = cholesterol_fuzzification(int(input_data['cholestrol']))
+    fuzzified_data['heart_rate'] = heart_rate_fuzzification(int(input_data['heart_rate']))
+    fuzzified_data['ecg'] = ECG_fuzzification(float(input_data['ecg']))
+    fuzzified_data['old_peak'] = old_peak_fuzzification(float(input_data['old_peak']))
+    return fuzzified_data
